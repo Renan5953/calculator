@@ -1,7 +1,10 @@
 const add = (n1, n2) => n1 + n2;
 const subtract = (n1, n2) => n1 - n2;
 const multiply = (n1, n2) => n1 * n2;
-const divide = (n1, n2) => n1 / n2;
+const divide = (n1, n2) => {
+    if (n2 === 0) return 'error';
+    return n1 / n2;
+};
 
 let firstNum = [];
 let operation = null;
@@ -12,6 +15,8 @@ const operate = (n1, n2, operation) => operation(n1, n2);
 
 const display = document.querySelector(".display");
 const buttons = document.querySelector(".buttons");
+
+const operators = ["+", "-", "×", "÷"];
 
 const getOperation = value => {
     if (value === "+") return add;
@@ -39,12 +44,12 @@ const updateChoice = choice => {
         return;
     }
 
-    if (operation === null && !["=", "."].includes(choice) && Number.isNaN(+choice) && choice !== undefined) {
+    if (operation === null && firstNum.length !== 0 && operators.includes(choice) && choice !== undefined) {
         operation = getOperation(choice);
         return;
     }
 
-    if (Number.isInteger(+choice) || choice === ".") {
+    if ((Number.isInteger(+choice) || choice === ".") && result === null) {
         if (choice === "." && !secondNum.includes(".")) {
             secondNum.push(choice);
 
@@ -60,6 +65,10 @@ const updateDisplay = item => {
 
     updateChoice(item);
 
+    if (result !== null) {
+        display.textContent = result;
+        return;
+    }
     if (firstNum.length !== 0 || firstNum.length === 0) {
         display.textContent = firstNum.join("");
     }
@@ -89,18 +98,47 @@ const backspace = () => {
         updateDisplay();
         return;
     }
-}
+};
 
 const clearAll = () => {
     firstNum.length = 0;
     operation = null;
     secondNum.length = 0;
+    result = null;
     updateDisplay();
-}
+};
+
+const startNewOperation = () => {
+    if (result === null) {
+        firstNum = String(operate(+firstNum.join(""), +secondNum.join(""), operation)).split("");
+        operation = null;
+        secondNum.length = 0;
+
+    } else if (![null, "error"].includes(result)) {
+        firstNum = String(result).split("");
+        operation = null;
+        secondNum.length = 0;
+        result = null;
+    }
+};
 
 buttons.addEventListener('click', (e) => {
     const value = e.target.value;
     if (value === undefined) return;
+
+    if (
+        operators.includes(value) &&
+        (![null, "error"].includes(result) ||
+        (result === null && secondNum.length !== 0))
+    ) {
+      startNewOperation();
+    }
+
+    if (value === "=") {
+        result = operate(+firstNum.join(""), +secondNum.join(""), operation);
+        updateDisplay();
+        return;
+    }
 
     if (value === "clr-last") {
         backspace();
