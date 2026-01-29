@@ -2,7 +2,7 @@ const add = (n1, n2) => n1 + n2;
 const subtract = (n1, n2) => n1 - n2;
 const multiply = (n1, n2) => n1 * n2;
 const divide = (n1, n2) => {
-    if (n2 === 0) return 'error';
+    if (n2 === 0) return "error";
     return n1 / n2;
 };
 
@@ -44,7 +44,12 @@ const updateChoice = choice => {
         return;
     }
 
-    if (operation === null && firstNum.length !== 0 && operators.includes(choice) && choice !== undefined) {
+    if (
+        (operation === null || operation !== null) &&
+        firstNum.length !== 0 &&
+        operators.includes(choice) &&
+        choice !== undefined
+    ) {
         operation = getOperation(choice);
         return;
     }
@@ -108,14 +113,16 @@ const clearAll = () => {
     updateDisplay();
 };
 
-const startNewOperation = () => {
+const startNewOperation = value => {
     if (result === null) {
         firstNum = String(operate(+firstNum.join(""), +secondNum.join(""), operation)).split("");
         operation = null;
         secondNum.length = 0;
 
     } else if (![null, "error"].includes(result)) {
-        firstNum = String(result).split("");
+        Number.isInteger(+value)
+            ? (firstNum.length = 0)
+            : (firstNum = String(result).split(""));
         operation = null;
         secondNum.length = 0;
         result = null;
@@ -127,11 +134,12 @@ buttons.addEventListener('click', (e) => {
     if (value === undefined) return;
 
     if (
-        operators.includes(value) &&
+        (operators.includes(value) &&
         (![null, "error"].includes(result) ||
-        (result === null && secondNum.length !== 0))
+        (result === null && secondNum.length !== 0))) ||
+        (Number.isInteger(+value) && result !== null)
     ) {
-      startNewOperation();
+        startNewOperation(value);
     }
 
     if (value === "=") {
