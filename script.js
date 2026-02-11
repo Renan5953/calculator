@@ -35,6 +35,8 @@ const getSign = item => {
 const updateChoice = choice => {
     if ((Number.isInteger(+choice) || choice === ".") && operation === null) {
         if (choice === "." && !firstNum.includes(".")) {
+            if (firstNum.length === 0) return;
+
             firstNum.push(choice);
 
         } else if (Number.isInteger(+choice)) {
@@ -71,7 +73,7 @@ const updateDisplay = item => {
     updateChoice(item);
 
     if (result !== null) {
-        display.textContent = result;
+        display.textContent = clampDecimalPlaces(result);
         return;
     }
     if (firstNum.length !== 0 || firstNum.length === 0) {
@@ -127,6 +129,14 @@ const startNewOperation = value => {
         secondNum.length = 0;
         result = null;
     }
+};
+
+const clampDecimalPlaces = num => {
+    const [int, dec] = String(num).split(".");
+
+    if (dec === undefined || dec.length <= 10) return num;
+
+    return Number(num.toFixed(10));
 };
 
 buttons.addEventListener('click', (e) => {
