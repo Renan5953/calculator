@@ -33,14 +33,16 @@ const getSign = item => {
 };
 
 const updateChoice = choice => {
-    if ((Number.isInteger(+choice) || choice === ".") && operation === null) {
+    const num = Number(choice);
+
+    if ((Number.isInteger(num) || choice === ".") && operation === null) {
         if (choice === "." && !firstNum.includes(".")) {
             if (firstNum.length === 0) return;
 
             firstNum.push(choice);
 
-        } else if (Number.isInteger(+choice)) {
-            firstNum.push(Number(choice));
+        } else if (Number.isInteger(num)) {
+            firstNum.push(num);
         }
 
         return;
@@ -56,12 +58,14 @@ const updateChoice = choice => {
         return;
     }
 
-    if ((Number.isInteger(+choice) || choice === ".") && result === null) {
+    if ((Number.isInteger(num) || choice === ".") && result === null) {
         if (choice === "." && !secondNum.includes(".")) {
+            if (secondNum.length === 0) return;
+
             secondNum.push(choice);
 
-        } else if (Number.isInteger(+choice)) {
-            secondNum.push(Number(choice));
+        } else if (Number.isInteger(num)) {
+            secondNum.push(num);
         }
 
         return;
@@ -116,13 +120,18 @@ const clearAll = () => {
 };
 
 const startNewOperation = value => {
+    const n1 = Number(firstNum.join(""));
+    const n2 = Number(secondNum.join(""));
+
     if (result === null) {
-        firstNum = String(operate(+firstNum.join(""), +secondNum.join(""), operation)).split("");
+        firstNum = String(operate(n1, n2, operation)).split("");
         operation = null;
         secondNum.length = 0;
 
     } else if (![null, "error"].includes(result)) {
-        Number.isInteger(+value)
+        const num = Number(value);
+
+        Number.isInteger(num)
             ? (firstNum.length = 0)
             : (firstNum = String(result).split(""));
         operation = null;
@@ -153,7 +162,10 @@ buttons.addEventListener('click', (e) => {
     }
 
     if (value === "=") {
-        result = operate(+firstNum.join(""), +secondNum.join(""), operation);
+        const n1 = Number(firstNum.join(""));
+        const n2 = Number(secondNum.join(""));
+
+        result = operate(n1, n2, operation);
         updateDisplay();
         return;
     }
