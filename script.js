@@ -124,7 +124,15 @@ const startNewOperation = value => {
     const n2 = Number(secondNum.join(""));
 
     if (result === null) {
-        firstNum = String(clampDecimalPlaces(operate(n1, n2, operation))).split("");
+        const solution = clampDecimalPlaces(operate(n1, n2, operation));
+
+        if (solution === "error") {
+            firstNum.length = 0;
+            result = solution;
+            return;
+        }
+
+        firstNum = String(solution).split("");
         operation = null;
         secondNum.length = 0;
 
