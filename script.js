@@ -16,13 +16,23 @@ const operate = (n1, n2, operation) => operation(n1, n2);
 const display = document.querySelector(".display");
 const buttons = document.querySelector(".buttons");
 
-const operators = ["+", "-", "×", "÷"];
+const operators = new Set([
+    "+", "-", "×", "÷", "*", "/"
+]);
+
+const allowedKeys = new Set([
+    "0", "1", "2", "3", "4",
+    "5", "6", "7", "8", "9",
+    "+", "-", "*", "/", ".",
+    "Enter", "Backspace",
+    "Escape"
+]);
 
 const getOperation = value => {
     if (value === "+") return add;
     if (value === "-") return subtract;
-    if (value === "×") return multiply;
-    if (value === "÷") return divide;
+    if (value === "×" || value === "*") return multiply;
+    if (value === "÷" || value === "/") return divide;
 };
 
 const getSign = item => {
@@ -51,7 +61,7 @@ const updateChoice = choice => {
     if (
         (operation === null || operation !== null) &&
         firstNum.length !== 0 &&
-        operators.includes(choice) &&
+        operators.has(choice) &&
         choice !== undefined
     ) {
         operation = getOperation(choice);
@@ -161,7 +171,7 @@ buttons.addEventListener('click', (e) => {
     if (value === undefined) return;
 
     if (
-        (operators.includes(value) &&
+        (operators.has(value) &&
         (![null, "error"].includes(result) ||
         (result === null && secondNum.length !== 0))) ||
         (Number.isInteger(+value) && result !== null)
@@ -188,4 +198,40 @@ buttons.addEventListener('click', (e) => {
     }
 
     updateDisplay(value);
+});
+
+document.addEventListener('keydown', (e) => {
+    const key = e.key;
+    if (!allowedKeys.has(key)) return;
+
+    if (
+        (operators.has(key) &&
+        (![null, "error"].includes(result) ||
+        (result === null && secondNum.length !== 0))) ||
+        (Number.isInteger(+key) && result !== null)
+    ) {
+        startNewOperation(key);
+    }
+
+    if (key === "Enter") {
+        e.preventDefault();
+
+        const n1 = Number(firstNum.join(""));
+        const n2 = Number(secondNum.join(""));
+
+        result = operate(n1, n2, operation);
+        updateDisplay();
+        return;
+    }
+
+    if (key === "Backspace") {
+        backspace();
+        return;
+    }
+    if (key === "Escape") {
+        clearAll();
+        return;
+    }
+
+    updateDisplay(key);
 });
