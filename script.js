@@ -91,7 +91,9 @@ const updateDisplay = item => {
         return;
     }
     if (firstNum.length !== 0 || firstNum.length === 0) {
-        display.textContent = firstNum.join("");
+        const num = Number(firstNum.join(""));
+
+        display.textContent = clampDecimalPlaces(num);
     }
     if (operation !== null) {
         display.textContent += ` ${getSign(operation)}`;
@@ -134,7 +136,7 @@ const startNewOperation = value => {
     const n2 = Number(secondNum.join(""));
 
     if (result === null) {
-        const solution = clampDecimalPlaces(operate(n1, n2, operation));
+        const solution = operate(n1, n2, operation);
 
         if (solution === "error") {
             firstNum.length = 0;
